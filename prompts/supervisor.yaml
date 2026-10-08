@@ -1,0 +1,5 @@
+version: v1
+strategy: bounded_deterministic
+plan: [metadata, governance, relation, quality]
+max_cycles: 20
+description: Supervisor只根据结构化状态路由，禁止Agent自由对话与无界循环。

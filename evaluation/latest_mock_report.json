@@ -1,0 +1,19 @@
+{
+  "evaluated_at": "2026-09-24",
+  "provider": "mock",
+  "prompt_version": "governance-v2",
+  "dataset": {
+    "column_instances": 131,
+    "search_cases": 5
+  },
+  "metrics": {
+    "annotation_exact_match": 1.0,
+    "sensitive_recall": 1.0,
+    "retrieval_recall_at_5": 1.0,
+    "retrieval_mrr": 1.0,
+    "agent_success_rate": 1.0,
+    "bounded_retry_passed": true,
+    "quality_passed": true
+  },
+  "disclaimer": "Mock基线仅验证流程、路由和评测代码，不代表Ollama或百炼模型真实效果。"
+}

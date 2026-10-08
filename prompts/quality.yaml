@@ -1,0 +1,7 @@
+version: v1
+checks:
+  - annotation_completeness
+  - confidence_gate
+  - semantic_type_compatibility
+  - sensitive_data_review
+  - data_quality_rule_recommendation

@@ -1,0 +1,52 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_DB: chargemeta
+      POSTGRES_USER: chargemeta
+      POSTGRES_PASSWORD: chargemeta
+    ports: ["5432:5432"]
+    volumes: ["chargemeta_pg:/var/lib/postgresql/data"]
+  redis:
+    image: redis:7-alpine
+    ports: ["6379:6379"]
+  api:
+    build: .
+    environment:
+      DATABASE_URL: postgresql+psycopg://chargemeta:chargemeta@postgres:5432/chargemeta
+      REDIS_URL: redis://redis:6379/0
+      CELERY_TASK_ALWAYS_EAGER: "false"
+      LLM_PROVIDER: ${LLM_PROVIDER:-mock}
+      OLLAMA_BASE_URL: http://ollama:11434
+      DEMO_DB_PATH: /app/data/demo_energy.db
+    ports: ["8000:8000"]
+    volumes: ["app_data:/app/data"]
+    depends_on: [postgres, redis]
+  worker:
+    build: .
+    command: celery -A chargemeta.worker.celery_app worker --loglevel=INFO --concurrency=1
+    environment:
+      DATABASE_URL: postgresql+psycopg://chargemeta:chargemeta@postgres:5432/chargemeta
+      REDIS_URL: redis://redis:6379/0
+      CELERY_TASK_ALWAYS_EAGER: "false"
+      LLM_PROVIDER: ${LLM_PROVIDER:-mock}
+      OLLAMA_BASE_URL: http://ollama:11434
+      DEMO_DB_PATH: /app/data/demo_energy.db
+    volumes: ["app_data:/app/data"]
+    depends_on: [postgres, redis]
+  ollama:
+    image: ollama/ollama:latest
+    ports: ["11434:11434"]
+    volumes: ["ollama_data:/root/.ollama"]
+    profiles: ["gpu"]
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+volumes:
+  chargemeta_pg:
+  ollama_data:
+  app_data:
